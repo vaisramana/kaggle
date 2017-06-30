@@ -19,6 +19,7 @@ def model(X, w1, w2, w3, inputLayerDropoutProbability, hiddenLayerDropoutProbabi
     return tf.matmul(y2, w3)
 
 
+SAMPLE_SIZE_PER_BATCH = 100
 
 (trX,trY,teX,teY) = dl.dataLoader()
 (trainImages,trainLabels,validateImages,validateLabels) = dl.dataLoader()
@@ -41,20 +42,24 @@ inputLayerDropoutProbability = tf.placeholder("float")
 hiddenLayerDropoutProbability = tf.placeholder("float")
 
 
-py_x = model(X, w1, w2, w3, inputLayerDropoutProbability, hiddenLayerDropoutProbability)
+estimatedY = model(X, w1, w2, w3, inputLayerDropoutProbability, hiddenLayerDropoutProbability)
 
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=py_x))
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=estimatedY))
 train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
-predict_op = tf.argmax(py_x, 1)
+#why gradient descent doesn't work?
+#train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
+predict_op = tf.argmax(estimatedY, 1)
 
 with tf.Session() as sess:
 
     tf.global_variables_initializer().run()
 
-    for i in xrange(100):
-        for start, end in zip(range(0, len(trainImages), 128), range(128, len(trainImages), 128)):
-            sess.run(train_op, feed_dict = {X: trainImages[start:end], Y: trainLabels[start:end],
-                                            inputLayerDropoutProbability: 0.8, hiddenLayerDropoutProbability: 0.5})
+    for i in xrange(10):
+        for start, end in zip(range(0, len(trainImages), SAMPLE_SIZE_PER_BATCH), range(SAMPLE_SIZE_PER_BATCH, len(trainImages), SAMPLE_SIZE_PER_BATCH)):
+            sess.run(train_op, feed_dict = {X: trainImages[start:end], 
+                                            Y: trainLabels[start:end],
+                                            inputLayerDropoutProbability: 0.8, 
+                                            hiddenLayerDropoutProbability: 0.5})
         print i, np.mean(np.argmax(validateLabels, axis = 1) == sess.run(predict_op, 
                         feed_dict = {X: validateImages, Y: validateLabels, inputLayerDropoutProbability: 1.0, hiddenLayerDropoutProbability: 1.0}))
