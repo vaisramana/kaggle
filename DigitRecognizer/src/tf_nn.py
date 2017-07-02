@@ -8,11 +8,11 @@ import dataLoader as dl
 SAMPLE_SIZE_PER_BATCH = 100
 BATCH_NUMBER = (dl.TRAIN_SAMPLE_SIZE/SAMPLE_SIZE_PER_BATCH)
 
-(trainImages,trainLabels,validateImages,validateLabels) = dl.dataLoader()
+(trainImages,trainLabels,validateImages,validateLabels,testImages) = dl.dataLoader()
 
-dl.saveToJpeg(11,trainImages,trainLabels);
-dl.saveToJpeg(110,trainImages,trainLabels);
-dl.saveToJpeg(1100,trainImages,trainLabels);
+dl.saveToJpeg(11,trainImages,trainLabels)
+dl.saveToJpeg(110,trainImages,trainLabels)
+dl.saveToJpeg(1100,trainImages,trainLabels)
 
 # Create the model
 x = tf.placeholder(tf.float32, [None, 784])

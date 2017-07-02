@@ -21,8 +21,7 @@ def model(X, w1, w2, w3, inputLayerDropoutProbability, hiddenLayerDropoutProbabi
 
 SAMPLE_SIZE_PER_BATCH = 100
 
-(trX,trY,teX,teY) = dl.dataLoader()
-(trainImages,trainLabels,validateImages,validateLabels) = dl.dataLoader()
+(trainImages,trainLabels,validateImages,validateLabels,testImages) = dl.dataLoader()
 
 X = tf.placeholder("float", [None, 784])
 Y = tf.placeholder("float", [None, 10])
@@ -55,11 +54,26 @@ with tf.Session() as sess:
 
     tf.global_variables_initializer().run()
 
-    for i in xrange(10):
+    for i in xrange(1):
         for start, end in zip(range(0, len(trainImages), SAMPLE_SIZE_PER_BATCH), range(SAMPLE_SIZE_PER_BATCH, len(trainImages), SAMPLE_SIZE_PER_BATCH)):
             sess.run(train_op, feed_dict = {X: trainImages[start:end], 
                                             Y: trainLabels[start:end],
                                             inputLayerDropoutProbability: 0.8, 
                                             hiddenLayerDropoutProbability: 0.5})
         print i, np.mean(np.argmax(validateLabels, axis = 1) == sess.run(predict_op, 
-                        feed_dict = {X: validateImages, Y: validateLabels, inputLayerDropoutProbability: 1.0, hiddenLayerDropoutProbability: 1.0}))
+                        feed_dict = {X: validateImages,
+                                     inputLayerDropoutProbability: 1.0, 
+                                     hiddenLayerDropoutProbability: 1.0}))
+
+
+    # apply in test data
+    testLabels = sess.run(predict_op, feed_dict = {X: testImages, 
+                                                   inputLayerDropoutProbability: 1.0, 
+                                                   hiddenLayerDropoutProbability: 1.0})
+
+dl.saveToJpeg(6,testImages,testLabels)
+dl.saveToJpeg(66,testImages,testLabels)
+dl.saveToJpeg(666,testImages,testLabels)
+
+dl.predictionSaver(testLabels)
+    
