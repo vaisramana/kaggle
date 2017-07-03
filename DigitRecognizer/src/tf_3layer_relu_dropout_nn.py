@@ -54,7 +54,7 @@ with tf.Session() as sess:
 
     tf.global_variables_initializer().run()
 
-    for i in xrange(100):
+    for i in xrange(1000):
         for start, end in zip(range(0, len(trainImages), SAMPLE_SIZE_PER_BATCH), range(SAMPLE_SIZE_PER_BATCH, len(trainImages), SAMPLE_SIZE_PER_BATCH)):
             sess.run(train_op, feed_dict = {X: trainImages[start:end], 
                                             Y: trainLabels[start:end],
