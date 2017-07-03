@@ -45,16 +45,16 @@ estimatedY = model(X, w1, w2, w3, inputLayerDropoutProbability, hiddenLayerDropo
 
 
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=estimatedY))
-train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
-#why gradient descent doesn't work?
-#train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
+#train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
+#why gradient descent doesn't work? learning rate 0.5 is far too large in this case.
+train_op = tf.train.GradientDescentOptimizer(0.001).minimize(cost)
 predict_op = tf.argmax(estimatedY, 1)
 
 with tf.Session() as sess:
 
     tf.global_variables_initializer().run()
 
-    for i in xrange(1):
+    for i in xrange(100):
         for start, end in zip(range(0, len(trainImages), SAMPLE_SIZE_PER_BATCH), range(SAMPLE_SIZE_PER_BATCH, len(trainImages), SAMPLE_SIZE_PER_BATCH)):
             sess.run(train_op, feed_dict = {X: trainImages[start:end], 
                                             Y: trainLabels[start:end],
@@ -70,10 +70,17 @@ with tf.Session() as sess:
     testLabels = sess.run(predict_op, feed_dict = {X: testImages, 
                                                    inputLayerDropoutProbability: 1.0, 
                                                    hiddenLayerDropoutProbability: 1.0})
-
-dl.saveToJpeg(6,testImages,testLabels)
-dl.saveToJpeg(66,testImages,testLabels)
-dl.saveToJpeg(666,testImages,testLabels)
+    
+print testLabels[2]
+print testLabels[22]
+print testLabels[222]
+print testLabels[2222]
+print testLabels[22222]
+dl.saveToJpeg(2,testImages,testLabels)
+dl.saveToJpeg(22,testImages,testLabels)
+dl.saveToJpeg(222,testImages,testLabels)
+dl.saveToJpeg(2222,testImages,testLabels)
+dl.saveToJpeg(22222,testImages,testLabels)
 
 dl.predictionSaver(testLabels)
     

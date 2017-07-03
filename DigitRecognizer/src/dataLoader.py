@@ -8,8 +8,12 @@ TOTAL_TRAIN_SAMPLE_SIZE = 42000
 VALIDATION_SAMPLE_SIZE = 12000
 TRAIN_SAMPLE_SIZE = (TOTAL_TRAIN_SAMPLE_SIZE-VALIDATION_SAMPLE_SIZE)
 
+
 def saveToJpeg(idx, images, labels=None):
-    """images is N*784 matrix and labels is N*10*1 matrix"""
+    """
+       images is N*784 matrix and labels is N*10*1 matrix
+       idx start from 0
+    """
     image = images[idx,:]
     if labels.size == 0:
         label = "?"
@@ -65,7 +69,7 @@ def predictionSaver(prediction):
     """
     output = np.zeros((prediction.shape[0],2))
     for i in range(prediction.shape[0]):
-        output[i] = [i,prediction[i]]
+        output[i] = [i+1,prediction[i]]
         
     # write data
     np.savetxt("prediction.csv",output,fmt='%d',delimiter=',',header="ImageId,Label",comments='')
